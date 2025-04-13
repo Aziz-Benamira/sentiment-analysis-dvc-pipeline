@@ -1,0 +1,47 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/raw/test.csv
+      hash: md5
+      md5: df71b5309911e75f289dc53a205a1f66
+      size: 474043
+    - path: data/raw/train.csv
+      hash: md5
+      md5: 42e084fd222e24347c26112b9400873f
+      size: 4642628
+    - path: src/preprocess.py
+      hash: md5
+      md5: bbfbc4ed60dccdfa0f25a9d73371bb5f
+      size: 4185
+    params:
+      params.yaml:
+        preprocess.max_length: 128
+        preprocess.missing_threshold: 0.05
+        preprocess.val_size: 0.1
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: d7005901e4178cda3b8ae55f57d6b9af
+      size: 654719
+    - path: data/processed/test_tokenized.pt
+      hash: md5
+      md5: fd9f2b0087f473d931314c9518cdcb5a
+      size: 2800581
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 703403ed4753c1969b6a1bfe4bbac12f
+      size: 5442114
+    - path: data/processed/train_tokenized.pt
+      hash: md5
+      md5: efb2a0cc3c5e176e550c058a7ec96ac0
+      size: 41749324
+    - path: data/processed/val.csv
+      hash: md5
+      md5: e0bb3bdd73867cd6d8360982e39a3ebb
+      size: 606476
+    - path: data/processed/val_tokenized.pt
+      hash: md5
+      md5: 2f186f7c40e816266d51c35362b09631
+      size: 2134206

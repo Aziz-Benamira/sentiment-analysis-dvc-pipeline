@@ -1,0 +1,18 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - data/raw/train.csv
+      - data/raw/test.csv
+      - src/preprocess.py
+    params:
+      - preprocess.max_length
+      - preprocess.val_size
+      - preprocess.missing_threshold
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+      - data/processed/train_tokenized.pt
+      - data/processed/val_tokenized.pt
+      - data/processed/test_tokenized.pt
