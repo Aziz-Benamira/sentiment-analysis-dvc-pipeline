@@ -1,4 +1,15 @@
 preprocess:
-  max_length: 128    # BERT tokenization max_length
-  val_size: 0.1      # Validation split from train.csv
-  missing_threshold: 0.05  # 5% threshold for null handling
+  max_length: 128
+  val_size: 0.1
+  missing_threshold: 0.05
+lora:
+  max_length: 128
+  batch_size_train: 64
+  batch_size_test: 256
+  lr: 0.00001
+  num_epochs: 5
+  rank: 8
+  lora_alpha: 32
+  patience: 3
+eval:
+  batch_size: 256

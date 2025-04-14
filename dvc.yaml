@@ -16,3 +16,14 @@ stages:
       - data/processed/train_tokenized.pt
       - data/processed/val_tokenized.pt
       - data/processed/test_tokenized.pt
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - data/processed/test_tokenized.pt
+      - models/bert_lora
+      - src/evaluate.py
+    params:
+      - eval.batch_size
+    outs:
+      - metrics/eval_metrics.json
+      - plots/confusion_matrix.png
