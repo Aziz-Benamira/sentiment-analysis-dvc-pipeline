@@ -1,0 +1,6 @@
+outs:
+- md5: 49a67c360f23ab150943f61a8b5db872.dir
+  size: 1853967
+  nfiles: 5
+  hash: md5
+  path: bert_lora
