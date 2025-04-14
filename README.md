@@ -95,7 +95,7 @@ sentiment-analysis-dvc-pipeline/
 **Clone the repository:**
 
 ```bash
-git clone https://github.com/yourusername/sentiment-analysis-dvc-pipeline.git
+git clone https://github.com/Aziz-Benamira/sentiment-analysis-dvc-pipeline.git
 cd sentiment-analysis-dvc-pipeline
 ```
 
