@@ -3,10 +3,11 @@ from torch.utils.data import DataLoader, TensorDataset
 from transformers import BertForSequenceClassification
 from peft import PeftModel
 import yaml
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
 import json
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from tqdm import tqdm
 
 def load_params():
@@ -15,6 +16,8 @@ def load_params():
 
 def evaluate():
     params = load_params()
+    # Sentiment mapping
+    sentiment_reverse_mapping = {0: "Negative", 1: "Neutral", 2: "Positive"}
     # Load test data
     test_data = torch.load("data/processed/test_tokenized.pt")
     test_dataset = TensorDataset(
@@ -36,7 +39,7 @@ def evaluate():
     model = PeftModel.from_pretrained(base_model, "models/bert_lora")
     model.to(device)
     model.eval()
-    # Evaluate
+    # Get predictions
     all_preds = []
     all_labels = []
     with torch.no_grad():
@@ -47,26 +50,39 @@ def evaluate():
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
     # Compute metrics
+    cm = confusion_matrix(all_labels, all_preds)
+    report = classification_report(
+        all_labels, all_preds, 
+        target_names=list(sentiment_reverse_mapping.values()), 
+        output_dict=True
+    )
     accuracy = accuracy_score(all_labels, all_preds)
-    f1 = f1_score(all_labels, all_preds, average="weighted")
     metrics = {
-        "accuracy": accuracy,
-        "f1_score": f1
+        "model_name": "bert_lora",
+        "test_accuracy": report["accuracy"],
+        "test_precision": report["weighted avg"]["precision"],
+        "test_recall": report["weighted avg"]["recall"],
+        "test_f1_score": report["weighted avg"]["f1-score"]
     }
-    print(f"Accuracy: {accuracy:.4f}, F1 Score: {f1:.4f}")
+    print("Test Classification Report:")
+    print(f"Overall Score: {(accuracy * 100):.2f}%")
+    print(classification_report(all_labels, all_preds, 
+                               target_names=list(sentiment_reverse_mapping.values())))
     # Save metrics
-    with open("metrics/eval_metrics.json", "w") as f:
+    with open("metrics/test_metrics.json", "w") as f:
         json.dump(metrics, f, indent=4)
     # Plot confusion matrix
-    cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", 
-                xticklabels=["Negative", "Neutral", "Positive"], 
-                yticklabels=["Negative", "Neutral", "Positive"])
-    plt.xlabel("Predicted")
-    plt.ylabel("True")
-    plt.title("Confusion Matrix")
-    plt.savefig("plots/confusion_matrix.png")
+                xticklabels=list(sentiment_reverse_mapping.values()), 
+                yticklabels=list(sentiment_reverse_mapping.values()))
+    # Highlight diagonal
+    for i in range(cm.shape[0]):
+        plt.gca().add_patch(patches.Rectangle((i, i), 1, 1, fill=False, edgecolor="Coral", linewidth=2))
+    plt.xlabel("Predicted Labels")
+    plt.ylabel("True Labels")
+    plt.title("Test Confusion Matrix")
+    plt.savefig("plots/test_confusion_matrix.png")
     plt.close()
 
 if __name__ == "__main__":

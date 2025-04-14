@@ -25,5 +25,25 @@ stages:
     params:
       - eval.batch_size
     outs:
-      - metrics/eval_metrics.json
-      - plots/confusion_matrix.png
+      - metrics/test_metrics.json
+      - plots/test_confusion_matrix.png
+  report:
+    cmd: python src/report.py
+    deps:
+      - metrics/test_metrics.json
+      - src/report.py
+    params:
+      - preprocess.max_length
+      - preprocess.val_size
+      - preprocess.missing_threshold
+      - lora.max_length
+      - lora.batch_size_train
+      - lora.batch_size_test
+      - lora.lr
+      - lora.num_epochs
+      - lora.rank
+      - lora.lora_alpha
+      - lora.patience
+      - eval.batch_size
+    outs:
+      - reports/pipeline_summary.md

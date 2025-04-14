@@ -45,3 +45,61 @@ stages:
       hash: md5
       md5: 2f186f7c40e816266d51c35362b09631
       size: 2134206
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/test_tokenized.pt
+      hash: md5
+      md5: fd9f2b0087f473d931314c9518cdcb5a
+      size: 2800581
+    - path: models/bert_lora
+      hash: md5
+      md5: 49a67c360f23ab150943f61a8b5db872.dir
+      size: 1853967
+      nfiles: 5
+    - path: src/evaluate.py
+      hash: md5
+      md5: ff3a47efd5f9e4e4adcfec1f8ea71dee
+      size: 3394
+    params:
+      params.yaml:
+        eval.batch_size: 256
+    outs:
+    - path: metrics/test_metrics.json
+      hash: md5
+      md5: 54b00757d60f7b633296606e56df2b0e
+      size: 202
+    - path: plots/test_confusion_matrix.png
+      hash: md5
+      md5: 459abcd1e66948bfb3b0a22441275b40
+      size: 30541
+  report:
+    cmd: python src/report.py
+    deps:
+    - path: metrics/test_metrics.json
+      hash: md5
+      md5: 54b00757d60f7b633296606e56df2b0e
+      size: 202
+    - path: src/report.py
+      hash: md5
+      md5: 049b490de058ebc7ee776b22090130c4
+      size: 2705
+    params:
+      params.yaml:
+        eval.batch_size: 256
+        lora.batch_size_test: 256
+        lora.batch_size_train: 64
+        lora.lora_alpha: 32
+        lora.lr: 1e-05
+        lora.max_length: 128
+        lora.num_epochs: 5
+        lora.patience: 3
+        lora.rank: 8
+        preprocess.max_length: 128
+        preprocess.missing_threshold: 0.05
+        preprocess.val_size: 0.1
+    outs:
+    - path: reports/pipeline_summary.md
+      hash: md5
+      md5: 9444757529633330212d2ba5cbf59bf4
+      size: 1786
